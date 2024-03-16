@@ -37,29 +37,19 @@ public class S3Controller {
     @GetMapping("/download")
     public ResponseEntity<?> downloadFile(@RequestParam("fileName") String fileName) throws FileDownloadException, IOException {
         Object response = s3StorageService.downloadFile(fileName);
-        S3ApiResponse apiResponse;
         HttpStatus httpStatus;
-        ResponseEntity<?> responseEntity;
         if (response != null) {
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
-            apiResponse = S3ApiResponse.builder()
-                    .message("File Downloaded Successfully: " + fileName)
-                    .httpStatusCode(200)
-                    .fileData(response)
-                    .build();
-            httpStatus = HttpStatus.OK;
-            responseEntity = new ResponseEntity<>(apiResponse, httpHeaders, httpStatus);
+            return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"").body(response);
         } else {
-            apiResponse = S3ApiResponse.builder()
+            S3ApiResponse apiResponse = S3ApiResponse.builder()
                     .message("File Not Found - Failed to Download: " + fileName)
                     .httpStatusCode(400)
                     .build();
             httpStatus = HttpStatus.NOT_FOUND;
-            responseEntity = new ResponseEntity<>(apiResponse, httpStatus);
+            ResponseEntity<?> responseEntity = new ResponseEntity<>(apiResponse, httpStatus);
+            log.info("Download File Response: {}", apiResponse);
+            return responseEntity;
         }
-        log.info("Download File Response: {}", apiResponse);
-        return responseEntity;
     }
 
     /**
