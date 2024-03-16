@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: spring-boot-amazon-s3
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2MB
+      max-file-size: 5MB
+      max-request-size: 10MB
+
+server:
+  port: 8080
+
+s3:
+  access-key: xxx
+  secret-key: xxx
+  bucket-name: sunny-s3-bucket
